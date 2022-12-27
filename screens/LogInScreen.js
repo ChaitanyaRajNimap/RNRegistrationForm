@@ -12,6 +12,10 @@ function LogInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const submitHandler = () => {
+    console.log(email, password);
+  };
+
   return (
     <View style={styles.rootContainer}>
       <Text style={styles.heading}>Welcome Back!</Text>
@@ -19,24 +23,32 @@ function LogInScreen() {
         Please sign in to your account
       </Text>
       <View style={styles.formContainer}>
-        <View style={styles.inputView}>
-          <TextInput
-            style={styles.TextInput}
-            placeholder="Email"
-            placeholderTextColor="#000"
-            onChangeText={email => setEmail(email)}
-          />
+        <View style={styles.inputContainer}>
+          <View style={styles.inputView}>
+            <TextInput
+              style={styles.TextInput}
+              placeholder="Email"
+              placeholderTextColor="#fff"
+              onChangeText={email => setEmail(email)}
+              value={email}
+            />
+          </View>
+          <Text style={styles.error}>Error!</Text>
         </View>
-        <View style={styles.inputView}>
-          <TextInput
-            style={styles.TextInput}
-            placeholder="Password"
-            placeholderTextColor="#fff"
-            secureTextEntry={true}
-            onChangeText={password => setPassword(password)}
-          />
+        <View style={styles.inputContainer}>
+          <View style={styles.inputView}>
+            <TextInput
+              style={styles.TextInput}
+              placeholder="Password"
+              placeholderTextColor="#fff"
+              secureTextEntry={true}
+              onChangeText={password => setPassword(password)}
+              value={password}
+            />
+          </View>
+          <Text style={styles.error}>Error!</Text>
         </View>
-        <TouchableOpacity style={{alignItems: 'flex-end'}}>
+        <TouchableOpacity style={{alignItems: 'flex-end', marginBottom: 60}}>
           <Text style={styles.forgotButton}>Forgot Password?</Text>
         </TouchableOpacity>
         <TouchableBtn text="Sign In" />
@@ -47,7 +59,8 @@ function LogInScreen() {
             marginTop: 10,
           }}>
           <Text style={styles.textSignUp}>Don't have an Account? </Text>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={(email, password) => submitHandler(email, password)}>
             <Text style={styles.signUpText}> Sign Up </Text>
           </TouchableOpacity>
         </View>
@@ -61,7 +74,7 @@ export default LogInScreen;
 const styles = StyleSheet.create({
   rootContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 60,
+    paddingVertical: 80,
     flex: 1,
     backgroundColor: '#28282B',
     alignItems: 'center',
@@ -73,26 +86,32 @@ const styles = StyleSheet.create({
   },
   subHeading: {marginTop: 5},
   formContainer: {
-    marginVertical: 40,
+    marginVertical: 60,
     flex: 1,
+  },
+  inputContainer: {
+    marginBottom: 10,
   },
   inputView: {
     width: 325,
-    paddingVertical: 20,
+    height: 60,
     borderRadius: 20,
-    marginVertical: 5,
+    marginBottom: 5,
     alignItems: 'center',
     backgroundColor: '#708090',
+  },
+  error: {
+    marginLeft: 15,
+    color: '#f00',
   },
   TextInput: {
     height: 50,
     flex: 1,
     padding: 10,
-    marginLeft: 20,
+    color: '#fff',
   },
   forgotButton: {
-    height: 30,
-    marginVertical: 5,
+    // height: 30,
     color: '#696969',
   },
   signUpText: {
