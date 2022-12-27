@@ -2,25 +2,24 @@ import React, {useState} from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TextInput,
+  StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 import TouchableBtn from '../components/TouchableBtn';
 
-function LogInScreen() {
+function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const submitHandler = () => {
     console.log(email, password);
   };
-
   return (
     <View style={styles.rootContainer}>
-      <Text style={styles.heading}>Welcome Back!</Text>
+      <Text style={styles.heading}>Create new account</Text>
       <Text style={[styles.textStyle, styles.subHeading]}>
-        Please sign in to your account
+        Please fill in the form to continue
       </Text>
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
@@ -69,7 +68,7 @@ function LogInScreen() {
   );
 }
 
-export default LogInScreen;
+export default SignUp;
 
 const styles = StyleSheet.create({
   rootContainer: {
