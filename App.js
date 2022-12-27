@@ -117,17 +117,26 @@
 // export default App;
 
 import React from 'react';
-import {View, Text, StyleSheet, SafeAreaView} from 'react-native';
+// import {NavigationContainer} from '@react-navigation/native';
+// import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {StyleSheet, SafeAreaView, StatusBar} from 'react-native';
+import RegistrationForm from './components/RegistrationForm';
+
+// const Stack = createNativeStackNavigator();
 
 function App() {
   return (
     <>
-      <SafeAreaView>
-        <View>
-          <Text>Registration Form</Text>
-        </View>
+      <StatusBar barStyle="light-content" backgroundColor="#1e90ff" />
+      <SafeAreaView style={{flex: 1}}>
+        <RegistrationForm />
       </SafeAreaView>
     </>
+    // <NavigationContainer>
+    //   <Stack.Navigator>
+    //     <Stack.Screen name="Home" component={RegistrationForm} />
+    //   </Stack.Navigator>
+    // </NavigationContainer>
   );
 }
 
