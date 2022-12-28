@@ -9,8 +9,8 @@ function RegistrationForm() {
   return (
     <View style={styles.container}>
       {/* <WelcomeScreen /> */}
-      <LogInScreen />
-      {/* <SignUp /> */}
+      {/* <LogInScreen /> */}
+      <SignUp />
     </View>
   );
 }

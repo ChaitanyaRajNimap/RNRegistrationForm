@@ -116,22 +116,18 @@ function LogInScreen() {
               secureTextEntry={true}
               onChangeText={value => updatePassword(value)}
               value={inputs.password}
+              maxLength={6}
             />
           </View>
           {errors.passwordErr.length !== 0 && (
             <Text style={styles.error}>{errors.passwordErr}</Text>
           )}
         </View>
-        <TouchableOpacity style={{alignItems: 'flex-end', marginBottom: 60}}>
+        <TouchableOpacity style={styles.forgotBtnContainer}>
           <Text style={styles.forgotButton}>Forgot Password?</Text>
         </TouchableOpacity>
         <TouchableBtn text="Sign In" onPress={submitHandler} />
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginTop: 10,
-          }}>
+        <View style={styles.signUpContainer}>
           <Text style={styles.textSignUp}>Don't have an Account? </Text>
           <TouchableOpacity>
             <Text style={styles.signUpText}> Sign Up </Text>
@@ -185,12 +181,17 @@ const styles = StyleSheet.create({
     padding: 10,
     color: '#fff',
   },
-  forgotButton: {
-    color: '#696969',
+  forgotBtnContainer: {
+    alignItems: 'flex-end',
+    marginBottom: 60,
   },
-  signUpText: {
-    color: '#1e90ff',
+  forgotButton: {color: '#696969'},
+  signUpContainer: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
+  signUpText: {color: '#1e90ff'},
   textStyle: {color: '#696969'},
   textSignUp: {color: '#fff'},
 });
