@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
     color: '#f00',
   },
   TextInput: {
+    width: '100%',
     height: 50,
     flex: 1,
     padding: 10,

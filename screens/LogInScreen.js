@@ -5,22 +5,79 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import TouchableBtn from '../components/TouchableBtn';
 
 function LogInScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const emailRegEx = `^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$`;
+  const passwordRegEx = `/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{4,6}$/`;
+  const initialInputs = {
+    email: '',
+    password: '',
+  };
 
-  const submitHandler = (email, password) => {
-    console.log(email, password);
-    console.log('Hello');
-    if (email.length <= 0 && password.length <= 0) {
-      setError("This feild can't be empty");
+  const initialErrors = {
+    emailErr: '',
+    passwordErr: '',
+  };
+
+  const [inputs, setInputs] = useState(initialInputs);
+  const [errors, setErrors] = useState(initialErrors);
+
+  const updateEmail = emailValue => {
+    setInputs(prevInputs => {
+      return {...prevInputs, email: emailValue};
+    });
+  };
+
+  const updatePassword = passwordValue => {
+    setInputs(prevInputs => {
+      return {...prevInputs, password: passwordValue};
+    });
+  };
+
+  const updateError = errorValue => {
+    setErrors(prevErrors => {
+      return {...prevErrors, emailErr: errorValue, passwordErr: errorValue};
+    });
+  };
+
+  const submitHandler = () => {
+    console.log(inputs.email);
+    if (inputs.email.length <= 0 && inputs.password.length <= 0) {
+      // updateError(`This feild can't be empty`);
+      setErrors(prevErrors => {
+        return {
+          ...prevErrors,
+          emailErr: `This feild can't be empty!`,
+          passwordErr: `This feild can't be empty!`,
+        };
+      });
+    } else if (!inputs.email.match(emailRegEx)) {
+      setErrors(prevErrors => {
+        return {
+          ...prevErrors,
+          emailErr: `Please enter valid email address!`,
+        };
+      });
+    } else if (!inputs.password.match(passwordRegEx)) {
+      setErrors(prevErrors => {
+        return {
+          ...prevErrors,
+          passwordErr: `Please enter valid password!`,
+        };
+      });
+    } else {
+      setErrors({
+        emailErr: '',
+        passwordErr: '',
+      });
     }
-    setEmail('');
-    setPassword('');
+
+    // Alert.alert('Data', `Email: ${inputs.email}\nPassword: ${inputs.password}`);
+
+    setInputs({email: '', password: ''});
   };
 
   return (
@@ -36,11 +93,13 @@ function LogInScreen() {
               style={styles.TextInput}
               placeholder="Email"
               placeholderTextColor="#696969"
-              onChangeText={email => setEmail(email)}
-              value={email}
+              onChangeText={value => updateEmail(value)}
+              value={inputs.email}
             />
           </View>
-          <Text style={styles.error}>{error}</Text>
+          {errors.emailErr.length !== 0 && (
+            <Text style={styles.error}>{errors.emailErr}</Text>
+          )}
         </View>
         <View style={styles.inputContainer}>
           <View style={styles.inputView}>
@@ -49,11 +108,13 @@ function LogInScreen() {
               placeholder="Password"
               placeholderTextColor="#696969"
               secureTextEntry={true}
-              onChangeText={password => setPassword(password)}
-              value={password}
+              onChangeText={value => updatePassword(value)}
+              value={inputs.password}
             />
           </View>
-          <Text style={styles.error}>{error}</Text>
+          {errors.passwordErr.length !== 0 && (
+            <Text style={styles.error}>{errors.passwordErr}</Text>
+          )}
         </View>
         <TouchableOpacity style={{alignItems: 'flex-end', marginBottom: 60}}>
           <Text style={styles.forgotButton}>Forgot Password?</Text>
@@ -112,6 +173,7 @@ const styles = StyleSheet.create({
     color: '#f00',
   },
   TextInput: {
+    width: '100%',
     height: 50,
     flex: 1,
     padding: 10,
