@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, {useState} from 'react';
 import {
   View,
@@ -10,20 +11,16 @@ import {
 import TouchableBtn from '../components/TouchableBtn';
 
 function LogInScreen() {
-  const emailRegEx = `^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$`;
-  const passwordRegEx = `/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{4,6}$/`;
-  const initialInputs = {
-    email: '',
-    password: '',
-  };
-
-  const initialErrors = {
-    emailErr: '',
-    passwordErr: '',
-  };
+  const emailRegEx = /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/;
+  const passwordRegEx = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{4,6}$/;
+  const initialInputs = {email: '', password: ''};
+  const initialErrors = {emailErr: '', passwordErr: ''};
 
   const [inputs, setInputs] = useState(initialInputs);
   const [errors, setErrors] = useState(initialErrors);
+
+  let isEmailValid = false;
+  let isPasswordValid = false;
 
   const updateEmail = emailValue => {
     setInputs(prevInputs => {
@@ -37,47 +34,56 @@ function LogInScreen() {
     });
   };
 
-  const updateError = errorValue => {
-    setErrors(prevErrors => {
-      return {...prevErrors, emailErr: errorValue, passwordErr: errorValue};
-    });
+  const validateEmail = email => {
+    if (email.length < 1) {
+      setErrors(prevError => {
+        return {...prevError, emailErr: `This feild can't be empty`};
+      });
+      isEmailValid = false;
+    } else if (!emailRegEx.test(email)) {
+      setErrors(prevError => {
+        return {...prevError, emailErr: `Enter valid email address`};
+      });
+      isEmailValid = false;
+    } else {
+      setErrors(prevError => {
+        return {...prevError, emailErr: ''};
+      });
+      isEmailValid = true;
+    }
+  };
+
+  const validatePassword = password => {
+    if (password.length < 1) {
+      setErrors(prevError => {
+        return {...prevError, passwordErr: `This feild can't be empty`};
+      });
+      isPasswordValid = false;
+    } else if (!passwordRegEx.test(password)) {
+      setErrors(prevError => {
+        return {...prevError, passwordErr: `Enter valid password`};
+      });
+      isPasswordValid = false;
+    } else {
+      setErrors(prevError => {
+        return {...prevError, passwordErr: ''};
+      });
+      isPasswordValid = true;
+    }
   };
 
   const submitHandler = () => {
-    console.log(inputs.email);
-    if (inputs.email.length <= 0 && inputs.password.length <= 0) {
-      // updateError(`This feild can't be empty`);
-      setErrors(prevErrors => {
-        return {
-          ...prevErrors,
-          emailErr: `This feild can't be empty!`,
-          passwordErr: `This feild can't be empty!`,
-        };
-      });
-    } else if (!inputs.email.match(emailRegEx)) {
-      setErrors(prevErrors => {
-        return {
-          ...prevErrors,
-          emailErr: `Please enter valid email address!`,
-        };
-      });
-    } else if (!inputs.password.match(passwordRegEx)) {
-      setErrors(prevErrors => {
-        return {
-          ...prevErrors,
-          passwordErr: `Please enter valid password!`,
-        };
-      });
-    } else {
-      setErrors({
-        emailErr: '',
-        passwordErr: '',
-      });
+    validateEmail(inputs.email);
+    validatePassword(inputs.password);
+
+    if (isEmailValid && isPasswordValid) {
+      setErrors({emailErr: '', passwordErr: ''});
+      setInputs({email: '', password: ''});
+      Alert.alert(
+        'Data',
+        `Email: ${inputs.email}\nPassword: ${inputs.password}`,
+      );
     }
-
-    // Alert.alert('Data', `Email: ${inputs.email}\nPassword: ${inputs.password}`);
-
-    setInputs({email: '', password: ''});
   };
 
   return (
