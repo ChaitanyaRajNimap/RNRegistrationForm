@@ -6,7 +6,6 @@ import {
   TextInput,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
   Alert,
 } from 'react-native';
 import TouchableBtn from '../components/TouchableBtn';

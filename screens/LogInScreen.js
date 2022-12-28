@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import TouchableBtn from '../components/TouchableBtn';
 
-function LogInScreen() {
+function LogInScreen({navigation}) {
   const emailRegEx = /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/;
   const passwordRegEx = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{4,6}$/;
   const initialInputs = {email: '', password: ''};
@@ -129,7 +129,7 @@ function LogInScreen() {
         <TouchableBtn text="Sign In" onPress={submitHandler} />
         <View style={styles.signUpContainer}>
           <Text style={styles.textSignUp}>Don't have an Account? </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
             <Text style={styles.signUpText}> Sign Up </Text>
           </TouchableOpacity>
         </View>

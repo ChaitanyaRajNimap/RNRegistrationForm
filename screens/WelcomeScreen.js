@@ -1,8 +1,9 @@
+/* eslint-disable prettier/prettier */
 import React from 'react';
 import {View, Text, ImageBackground, StyleSheet} from 'react-native';
 import TouchableBtn from '../components/TouchableBtn';
 
-function WelcomeScreen() {
+function WelcomeScreen({navigation}) {
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -14,7 +15,10 @@ function WelcomeScreen() {
           Watch your favorite anime or movies on only one platform. You can
           watch it anytime and anywhere.
         </Text>
-        <TouchableBtn text="Get Started" />
+        <TouchableBtn
+          text="Get Started"
+          onPress={() => navigation.navigate('LogIn')}
+        />
       </ImageBackground>
     </View>
   );
