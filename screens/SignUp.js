@@ -9,12 +9,6 @@ import {
 import TouchableBtn from '../components/TouchableBtn';
 
 function SignUp() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const submitHandler = () => {
-    console.log(email, password);
-  };
   return (
     <View style={styles.rootContainer}>
       <Text style={styles.heading}>Create new account</Text>
@@ -26,10 +20,38 @@ function SignUp() {
           <View style={styles.inputView}>
             <TextInput
               style={styles.TextInput}
-              placeholder="Email"
-              placeholderTextColor="#fff"
-              onChangeText={email => setEmail(email)}
-              value={email}
+              placeholder="First Name"
+              placeholderTextColor="#696969"
+            />
+          </View>
+          {/* <Text style={styles.error}>Error!</Text> */}
+        </View>
+        <View style={styles.inputContainer}>
+          <View style={styles.inputView}>
+            <TextInput
+              style={styles.TextInput}
+              placeholder="Lasst Name"
+              placeholderTextColor="#696969"
+            />
+          </View>
+          {/* <Text style={styles.error}>Error!</Text> */}
+        </View>
+        <View style={styles.inputContainer}>
+          <View style={styles.inputView}>
+            <TextInput
+              style={styles.TextInput}
+              placeholder="Email Address"
+              placeholderTextColor="#696969"
+            />
+          </View>
+          {/* <Text style={styles.error}>Error!</Text> */}
+        </View>
+        <View style={styles.inputContainer}>
+          <View style={styles.inputView}>
+            <TextInput
+              style={styles.TextInput}
+              placeholder="Phone Number"
+              placeholderTextColor="#696969"
             />
           </View>
           {/* <Text style={styles.error}>Error!</Text> */}
@@ -39,30 +61,24 @@ function SignUp() {
             <TextInput
               style={styles.TextInput}
               placeholder="Password"
-              placeholderTextColor="#fff"
+              placeholderTextColor="#696969"
               secureTextEntry={true}
-              onChangeText={password => setPassword(password)}
-              value={password}
             />
           </View>
-          {/* <Text style={styles.error}>Error!</Text> */}
+          {/* <Text style={styles.error}>{error}</Text> */}
         </View>
-        <TouchableOpacity style={{alignItems: 'flex-end', marginBottom: 60}}>
-          <Text style={styles.forgotButton}>Forgot Password?</Text>
-        </TouchableOpacity>
-        <TouchableBtn text="Sign In" />
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginTop: 10,
-          }}>
-          <Text style={styles.textSignUp}>Don't have an Account? </Text>
-          <TouchableOpacity
-            onPress={(email, password) => submitHandler(email, password)}>
-            <Text style={styles.signUpText}> Sign Up </Text>
-          </TouchableOpacity>
+        <View style={styles.inputContainer}>
+          <View style={styles.inputView}>
+            <TextInput
+              style={styles.TextInput}
+              placeholder="Confirm Password"
+              placeholderTextColor="#696969"
+              secureTextEntry={true}
+            />
+          </View>
+          {/* <Text style={styles.error}>{error}</Text> */}
         </View>
+        <TouchableBtn text="Sign Up" />
       </View>
     </View>
   );
@@ -89,15 +105,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   inputContainer: {
-    marginBottom: 10,
+    marginBottom: 5,
   },
   inputView: {
     width: 325,
     height: 60,
+    paddingHorizontal: 15,
     borderRadius: 20,
     marginBottom: 5,
-    alignItems: 'center',
-    backgroundColor: '#708090',
+    alignItems: 'flex-start',
+    backgroundColor: '#1c1d1f',
   },
   error: {
     marginLeft: 15,
@@ -109,12 +126,5 @@ const styles = StyleSheet.create({
     padding: 10,
     color: '#fff',
   },
-  forgotButton: {
-    color: '#696969',
-  },
-  signUpText: {
-    color: '#1e90ff',
-  },
   textStyle: {color: '#696969'},
-  textSignUp: {color: '#fff'},
 });

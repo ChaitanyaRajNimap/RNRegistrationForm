@@ -11,9 +11,16 @@ import TouchableBtn from '../components/TouchableBtn';
 function LogInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const submitHandler = () => {
+  const submitHandler = (email, password) => {
     console.log(email, password);
+    console.log('Hello');
+    if (email.length <= 0 && password.length <= 0) {
+      setError("This feild can't be empty");
+    }
+    setEmail('');
+    setPassword('');
   };
 
   return (
@@ -28,30 +35,30 @@ function LogInScreen() {
             <TextInput
               style={styles.TextInput}
               placeholder="Email"
-              placeholderTextColor="#fff"
+              placeholderTextColor="#696969"
               onChangeText={email => setEmail(email)}
               value={email}
             />
           </View>
-          {/* <Text style={styles.error}>Error!</Text> */}
+          <Text style={styles.error}>{error}</Text>
         </View>
         <View style={styles.inputContainer}>
           <View style={styles.inputView}>
             <TextInput
               style={styles.TextInput}
               placeholder="Password"
-              placeholderTextColor="#fff"
+              placeholderTextColor="#696969"
               secureTextEntry={true}
               onChangeText={password => setPassword(password)}
               value={password}
             />
           </View>
-          {/* <Text style={styles.error}>Error!</Text> */}
+          <Text style={styles.error}>{error}</Text>
         </View>
         <TouchableOpacity style={{alignItems: 'flex-end', marginBottom: 60}}>
           <Text style={styles.forgotButton}>Forgot Password?</Text>
         </TouchableOpacity>
-        <TouchableBtn text="Sign In" />
+        <TouchableBtn text="Sign In" onPress={submitHandler} />
         <View
           style={{
             flexDirection: 'row',
@@ -59,8 +66,7 @@ function LogInScreen() {
             marginTop: 10,
           }}>
           <Text style={styles.textSignUp}>Don't have an Account? </Text>
-          <TouchableOpacity
-            onPress={(email, password) => submitHandler(email, password)}>
+          <TouchableOpacity>
             <Text style={styles.signUpText}> Sign Up </Text>
           </TouchableOpacity>
         </View>
@@ -95,10 +101,11 @@ const styles = StyleSheet.create({
   inputView: {
     width: 325,
     height: 60,
+    paddingHorizontal: 15,
     borderRadius: 20,
     marginBottom: 5,
-    alignItems: 'center',
-    backgroundColor: '#708090',
+    alignItems: 'flex-start',
+    backgroundColor: '#1c1d1f',
   },
   error: {
     marginLeft: 15,
