@@ -4,6 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import RegistrationForm from './components/RegistrationForm';
 import LogInScreen from './screens/LogInScreen';
 import SignUp from './screens/SignUp';
+import HomeScreen from './screens/HomeScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -45,6 +46,20 @@ function App() {
             component={SignUp}
             options={{
               title: 'Sign Up',
+              headerStyle: {
+                backgroundColor: '#1e90ff',
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
+            }}
+          />
+          <Stack.Screen
+            name="UserHomeScreen"
+            component={HomeScreen}
+            options={{
+              title: 'Home',
               headerStyle: {
                 backgroundColor: '#1e90ff',
               },

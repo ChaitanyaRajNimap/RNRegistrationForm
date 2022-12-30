@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, {useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -10,7 +11,7 @@ import {
 } from 'react-native';
 import TouchableBtn from '../components/TouchableBtn';
 
-function SignUp() {
+function SignUp({navigation}) {
   const emailRegEx = /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/;
   const passwordRegEx = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{4,6}$/;
   const nameRegEx = /^[A-Za-z\s]{1,}[A-Za-z\s]{0,}$/;
@@ -156,6 +157,26 @@ function SignUp() {
     }
   };
 
+  //for storing data async way
+  const storeData = async value => {
+    try {
+      const jsonValue = JSON.stringify(value);
+      await AsyncStorage.setItem('UserDetails', jsonValue);
+    } catch (e) {
+      // saving error
+    }
+  };
+
+  const removeValue = async () => {
+    try {
+      await AsyncStorage.removeItem('UserDetails');
+    } catch (e) {
+      // remove error
+    }
+
+    console.log('Done.');
+  };
+
   const submitHandler = () => {
     validateFirstName(inputs.firstName);
     validateLastName(inputs.lastName);
@@ -188,10 +209,8 @@ function SignUp() {
         password: '',
         confPassword: '',
       });
-      Alert.alert(
-        'Data',
-        `First Name: ${inputs.firstName}\nLast Name: ${inputs.lastName}\nEmail: ${inputs.email}Phone Number: ${inputs.phone}\nPassword: ${inputs.password}`,
-      );
+      storeData(inputs);
+      navigation.navigate('LogIn');
     }
   };
 
@@ -317,6 +336,7 @@ function SignUp() {
             )}
           </View>
           <TouchableBtn text="Sign Up" onPress={submitHandler} />
+          <TouchableBtn text="Delete Users" onPress={removeValue} />
         </View>
       </View>
     </ScrollView>

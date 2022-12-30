@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, {useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -72,17 +73,36 @@ function LogInScreen({navigation}) {
     }
   };
 
+  //for reading data stored in async
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('UserDetails');
+      // console.log('Users Deatils from log in : ', JSON.parse(jsonValue));
+      jsonValue != null ? JSON.parse(jsonValue) : null;
+      return jsonValue;
+    } catch (e) {
+      // error reading value
+    }
+  };
+
   const submitHandler = () => {
     validateEmail(inputs.email);
     validatePassword(inputs.password);
 
     if (isEmailValid && isPasswordValid) {
+      let userEmail, userPassword;
       setErrors({emailErr: '', passwordErr: ''});
       setInputs({email: '', password: ''});
-      Alert.alert(
-        'Data',
-        `Email: ${inputs.email}\nPassword: ${inputs.password}`,
-      );
+      getData().then(res => {
+        const userData = JSON.parse(res);
+        userEmail = userData.email;
+        userPassword = userData.password;
+        if (inputs.email === userEmail && inputs.password === userPassword) {
+          navigation.navigate('UserHomeScreen');
+        } else {
+          Alert.alert('Warning!', `Credentials doesn't match, try again!`);
+        }
+      });
     }
   };
 
