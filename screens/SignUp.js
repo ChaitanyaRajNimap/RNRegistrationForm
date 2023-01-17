@@ -32,9 +32,19 @@ function SignUp({navigation}) {
     passwordErr: '',
     confPasswordErr: '',
   };
+  // const initialFocus = {
+  //   firstNameFocus: false,
+  //   lastNameFocus: false,
+  //   emailFocus: false,
+  //   phoneFocus: false,
+  //   passwordFocus: false,
+  //   confPasswordFocus: false,
+  // };
 
   const [inputs, setInputs] = useState(initialInputs);
   const [errors, setErrors] = useState(initialErrors);
+  // const [focus, setFocus] = useState(initialFocus);
+  // const [InputBackGroundColor, setInputBackGroundColor] = useState('#1c1d1f');
 
   let isFirstNameValid = false;
   let isLastNameValid = false;
@@ -48,16 +58,25 @@ function SignUp({navigation}) {
       setErrors(prevError => {
         return {...prevError, firstNameErr: `This feild can't be empty`};
       });
+      // setFocus(prevFocus => {
+      //   return {...prevFocus, firstNameFocus: true};
+      // });
       isFirstNameValid = false;
     } else if (!nameRegEx.test(firstName)) {
       setErrors(prevError => {
         return {...prevError, firstNameErr: `Enter valid first name`};
       });
+      // setFocus(prevFocus => {
+      //   return {...prevFocus, firstNameFocus: true};
+      // });
       isFirstNameValid = false;
     } else {
       setErrors(prevError => {
         return {...prevError, firstNameErr: ''};
       });
+      // setFocus(prevFocus => {
+      //   return {...prevFocus, firstNameFocus: false};
+      // });
       isFirstNameValid = true;
     }
   };
@@ -185,34 +204,145 @@ function SignUp({navigation}) {
     validatePassword(inputs.password);
     validateConfPassword(inputs.confPassword, inputs.password);
 
-    if (
-      isFirstNameValid &&
-      isLastNameValid &&
-      isEmailValid &&
-      isPhoneValid &&
-      isPasswordValid &&
-      isConfPasswordValid
-    ) {
-      setErrors({
-        firstNameErr: '',
-        lastNameErr: '',
-        emailErr: '',
-        phoneErr: '',
-        passwordErr: '',
-        confPasswordErr: '',
+    if (!isFirstNameValid) {
+      setErrors(prevError => {
+        return {
+          ...prevError,
+          firstNameErr: 'Please enter valid first name',
+        };
       });
-      setInputs({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        password: '',
-        confPassword: '',
+    } else {
+      setErrors(prevError => {
+        return {
+          ...prevError,
+          firstNameErr: '',
+        };
       });
-      storeData(inputs);
-      navigation.navigate('LogIn');
+      if (!isLastNameValid) {
+        setErrors(prevError => {
+          return {
+            ...prevError,
+            lastNameErr: 'Please enter valid last name',
+          };
+        });
+      } else {
+        setErrors(prevError => {
+          return {
+            ...prevError,
+            lastNameErr: '',
+          };
+        });
+        if (!isEmailValid) {
+          setErrors(prevError => {
+            return {
+              ...prevError,
+              emailErr: 'Please enter valid email',
+            };
+          });
+        } else {
+          setErrors(prevError => {
+            return {
+              ...prevError,
+              emailErr: '',
+            };
+          });
+          if (!isPhoneValid) {
+            setErrors(prevError => {
+              return {
+                ...prevError,
+                phoneErr: 'Please enter valid phone number',
+              };
+            });
+          } else {
+            setErrors(prevError => {
+              return {
+                ...prevError,
+                phoneErr: '',
+              };
+            });
+            if (!isPasswordValid) {
+              setErrors(prevError => {
+                return {
+                  ...prevError,
+                  passwordErr: 'Please enter valid password',
+                };
+              });
+            } else {
+              setErrors(prevError => {
+                return {
+                  ...prevError,
+                  passwordErr: '',
+                };
+              });
+              if (!isConfPasswordValid) {
+                setErrors(prevError => {
+                  return {
+                    ...prevError,
+                    confPasswordErr: `Password doesn't matched`,
+                  };
+                });
+              } else {
+                setErrors(prevError => {
+                  return {
+                    ...prevError,
+                    confPasswordErr: '',
+                  };
+                });
+                setInputs({
+                  firstName: '',
+                  lastName: '',
+                  email: '',
+                  phone: '',
+                  password: '',
+                  confPassword: '',
+                });
+                storeData(inputs);
+                navigation.navigate('LogIn');
+              }
+            }
+          }
+        }
+      }
     }
+
+    // if (
+    //   isFirstNameValid &&
+    //   isLastNameValid &&
+    //   isEmailValid &&
+    //   isPhoneValid &&
+    //   isPasswordValid &&
+    //   isConfPasswordValid
+    // ) {
+    //   setErrors({
+    //     firstNameErr: '',
+    //     lastNameErr: '',
+    //     emailErr: '',
+    //     phoneErr: '',
+    //     passwordErr: '',
+    //     confPasswordErr: '',
+    //   });
+    //   setInputs({
+    //     firstName: '',
+    //     lastName: '',
+    //     email: '',
+    //     phone: '',
+    //     password: '',
+    //     confPassword: '',
+    //   });
+    //   storeData(inputs);
+    //   navigation.navigate('LogIn');
+    // }
   };
+
+  // const customOnFocus = () => {
+  //   props?.onFocus;
+  //   setInputBackgroundColor(secondary);
+  // };
+
+  // const customOnBlur = () => {
+  //   props?.onBlur;
+  //   setInputBackgroundColor('#1c1d1f');
+  // };
 
   return (
     <ScrollView style={{flex: 1}}>
@@ -233,6 +363,17 @@ function SignUp({navigation}) {
                     return {...prevInputs, firstName: value};
                   })
                 }
+                // autoFocus={focus.firstNameFocus}
+                // onFocus={customOnFocus}
+                // onBlur={customOnBlur}
+                onEndEditing={e => {
+                  e.persist();
+                  // console.log(e.nativeEvent.text);
+                  validateFirstName(e.nativeEvent.text);
+                }}
+                // onBlur={event => {
+                //   return console.log(event);
+                // }}
                 value={inputs.firstName}
               />
             </View>
