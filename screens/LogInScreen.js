@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
@@ -11,6 +11,20 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import TouchableBtn from '../components/TouchableBtn';
+//for sqlite
+import SQLite from 'react-native-sqlite-storage';
+
+//for defining database
+const db = SQLite.openDatabase(
+  {
+    name: 'MainDB',
+    location: 'default',
+  },
+  () => {},
+  error => {
+    console.log(error);
+  },
+);
 
 function LogInScreen({navigation}) {
   const emailRegEx = /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/;
@@ -79,10 +93,19 @@ function LogInScreen({navigation}) {
   //for reading data stored in async
   const getData = async () => {
     try {
-      const jsonValue = await AsyncStorage.getItem('UserDetails');
-      // console.log('Users Deatils from log in : ', JSON.parse(jsonValue));
-      jsonValue != null ? JSON.parse(jsonValue) : null;
-      return jsonValue;
+      // const jsonValue = await AsyncStorage.getItem('UserDetails');
+      // // console.log('Users Deatils from log in : ', JSON.parse(jsonValue));
+      // jsonValue != null ? JSON.parse(jsonValue) : null;
+      // return jsonValue;
+      db.transaction(tx => {
+        tx.executeSql('SELECT Token FROM Users', [], (tx, results) => {
+          var len = results.rows.length;
+          if (len > 0) {
+            var userToken = results.rows.item(0).Token;
+            return userToken;
+          }
+        });
+      });
     } catch (e) {
       // error reading value
     }
@@ -146,10 +169,15 @@ function LogInScreen({navigation}) {
         });
         let userEmail, userPassword;
         getData().then(res => {
-          const userData = JSON.parse(res);
-          userEmail = userData.email;
-          userPassword = userData.password;
-          if (inputs.email === userEmail && inputs.password === userPassword) {
+          // const userData = JSON.parse(res);
+          // userEmail = userData.email;
+          // userPassword = userData.password;
+          // if (inputs.email === userEmail && inputs.password === userPassword) {
+          //   navigation.navigate('UserHomeScreen');
+          // } else {
+          //   Alert.alert('Warning!', `Credentials doesn't match, try again!`);
+          // }
+          if (res) {
             navigation.navigate('UserHomeScreen');
           } else {
             Alert.alert('Warning!', `Credentials doesn't match, try again!`);

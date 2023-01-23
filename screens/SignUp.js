@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
@@ -11,6 +11,20 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import TouchableBtn from '../components/TouchableBtn';
+//for sqlite
+import SQLite from 'react-native-sqlite-storage';
+
+//for defining database
+const db = SQLite.openDatabase(
+  {
+    name: 'MainDB',
+    location: 'default',
+  },
+  () => {},
+  error => {
+    console.log(error);
+  },
+);
 
 function SignUp({navigation}) {
   const emailRegEx = /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/;
@@ -45,6 +59,21 @@ function SignUp({navigation}) {
   const [inputs, setInputs] = useState(initialInputs);
   const [errors, setErrors] = useState(initialErrors);
   const [isFocused, setIsFocused] = useState(initialFocus);
+
+  //function to create table
+  const createTable = () => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'CREATE TABLE IF NOT EXISTS' +
+          'Users ' +
+          '(ID INTEGER PRIMARY KEY AUTOINCREMENT,Token INTEGER);',
+      );
+    });
+  };
+
+  useEffect(() => {
+    createTable();
+  }, []);
 
   let isFirstNameValid = false;
   let isLastNameValid = false;
@@ -169,17 +198,35 @@ function SignUp({navigation}) {
 
   //for storing data async way
   const storeData = async value => {
-    try {
-      const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem('UserDetails', jsonValue);
-    } catch (e) {
-      // saving error
+    if (value) {
+      let x = Math.floor(Math.random() * 100 + 1);
+
+      try {
+        // const jsonValue = JSON.stringify(value);
+        // await AsyncStorage.setItem('UserDetails', jsonValue);
+        await db.transaction(async tx => {
+          await tx.executeSql('INSERT INTO Users (Token) VALUES (?)', [x]);
+        });
+      } catch (e) {
+        // saving error
+      }
     }
   };
 
   const removeValue = async () => {
     try {
-      await AsyncStorage.removeItem('UserDetails');
+      // await AsyncStorage.removeItem('UserDetails');
+      db.transaction(tx => {
+        tx.executeSql(
+          'DELETE FROM Users',
+          [],
+          () => {},
+          error => {
+            console.log(error);
+          },
+        );
+      });
+      navigation.navigate('LogIn');
     } catch (e) {
       // remove error
     }
