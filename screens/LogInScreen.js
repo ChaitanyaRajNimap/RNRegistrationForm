@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  KeyboardAvoidingView,
 } from 'react-native';
 import TouchableBtn from '../components/TouchableBtn';
 
@@ -16,9 +17,11 @@ function LogInScreen({navigation}) {
   const passwordRegEx = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{4,6}$/;
   const initialInputs = {email: '', password: ''};
   const initialErrors = {emailErr: '', passwordErr: ''};
+  const initialFocus = {emailFocus: '', passwordFocus: ''};
 
   const [inputs, setInputs] = useState(initialInputs);
   const [errors, setErrors] = useState(initialErrors);
+  const [isFocused, setIsFocused] = useState(initialFocus);
 
   let isEmailValid = false;
   let isPasswordValid = false;
@@ -89,20 +92,70 @@ function LogInScreen({navigation}) {
     validateEmail(inputs.email);
     validatePassword(inputs.password);
 
-    if (isEmailValid && isPasswordValid) {
-      let userEmail, userPassword;
-      setErrors({emailErr: '', passwordErr: ''});
-      setInputs({email: '', password: ''});
-      getData().then(res => {
-        const userData = JSON.parse(res);
-        userEmail = userData.email;
-        userPassword = userData.password;
-        if (inputs.email === userEmail && inputs.password === userPassword) {
-          navigation.navigate('UserHomeScreen');
-        } else {
-          Alert.alert('Warning!', `Credentials doesn't match, try again!`);
-        }
+    if (!isEmailValid) {
+      setErrors(prevError => {
+        return {
+          ...prevError,
+          emailErr: 'Please enter valid email',
+        };
       });
+      setIsFocused(prevFocused => {
+        return {
+          ...prevFocused,
+          emailFocus: true,
+        };
+      });
+    } else {
+      setErrors(prevError => {
+        return {
+          ...prevError,
+          emailErr: '',
+        };
+      });
+      setIsFocused(prevFocused => {
+        return {
+          ...prevFocused,
+          emailFocus: false,
+        };
+      });
+      if (!isPasswordValid) {
+        setErrors(prevError => {
+          return {
+            ...prevError,
+            passwordErr: 'Please enter valid password',
+          };
+        });
+        setIsFocused(prevFocused => {
+          return {
+            ...prevFocused,
+            passwordFocus: true,
+          };
+        });
+      } else {
+        setErrors(prevError => {
+          return {
+            ...prevError,
+            passwordErr: '',
+          };
+        });
+        setIsFocused(prevFocused => {
+          return {
+            ...prevFocused,
+            passwordFocus: false,
+          };
+        });
+        let userEmail, userPassword;
+        getData().then(res => {
+          const userData = JSON.parse(res);
+          userEmail = userData.email;
+          userPassword = userData.password;
+          if (inputs.email === userEmail && inputs.password === userPassword) {
+            navigation.navigate('UserHomeScreen');
+          } else {
+            Alert.alert('Warning!', `Credentials doesn't match, try again!`);
+          }
+        });
+      }
     }
   };
 
@@ -112,48 +165,105 @@ function LogInScreen({navigation}) {
       <Text style={[styles.textStyle, styles.subHeading]}>
         Please sign in to your account
       </Text>
-      <View style={styles.formContainer}>
-        <View style={styles.inputContainer}>
-          <View style={styles.inputView}>
-            <TextInput
-              style={styles.TextInput}
-              placeholder="Email"
-              placeholderTextColor="#696969"
-              onChangeText={value => updateEmail(value)}
-              value={inputs.email}
-            />
+      <KeyboardAvoidingView>
+        <View style={styles.formContainer}>
+          <View style={styles.inputContainer}>
+            <View style={styles.inputView}>
+              <TextInput
+                style={[
+                  styles.TextInput,
+                  {
+                    borderBottomColor: isFocused.emailFocus
+                      ? '#1e90ff'
+                      : '#1c1d1f',
+                  },
+                ]}
+                placeholder="Email Address"
+                placeholderTextColor="#696969"
+                onChangeText={value => {
+                  validateEmail(value);
+                  setInputs(prevInputs => {
+                    return {...prevInputs, email: value};
+                  });
+                }}
+                onFocus={() =>
+                  setIsFocused(prevFocused => {
+                    return {
+                      ...prevFocused,
+                      emailFocus: true,
+                    };
+                  })
+                }
+                onBlur={() => {
+                  setIsFocused(prevFocused => {
+                    return {
+                      ...prevFocused,
+                      emailFocus: false,
+                    };
+                  });
+                }}
+                value={inputs.email}
+              />
+            </View>
+            {errors.emailErr.length !== 0 && (
+              <Text style={styles.error}>{errors.emailErr}</Text>
+            )}
           </View>
-          {errors.emailErr.length !== 0 && (
-            <Text style={styles.error}>{errors.emailErr}</Text>
-          )}
-        </View>
-        <View style={styles.inputContainer}>
-          <View style={styles.inputView}>
-            <TextInput
-              style={styles.TextInput}
-              placeholder="Password"
-              placeholderTextColor="#696969"
-              secureTextEntry={true}
-              onChangeText={value => updatePassword(value)}
-              value={inputs.password}
-              maxLength={6}
-            />
+          <View style={styles.inputContainer}>
+            <View style={styles.inputView}>
+              <TextInput
+                style={[
+                  styles.TextInput,
+                  {
+                    borderBottomColor: isFocused.passwordFocus
+                      ? '#1e90ff'
+                      : '#1c1d1f',
+                  },
+                ]}
+                placeholder="Password"
+                placeholderTextColor="#696969"
+                maxLength={6}
+                onChangeText={value => {
+                  validatePassword(value);
+                  setInputs(prevInputs => {
+                    return {...prevInputs, password: value};
+                  });
+                }}
+                onFocus={() =>
+                  setIsFocused(prevFocused => {
+                    return {
+                      ...prevFocused,
+                      passwordFocus: true,
+                    };
+                  })
+                }
+                onBlur={() => {
+                  setIsFocused(prevFocused => {
+                    return {
+                      ...prevFocused,
+                      passwordFocus: false,
+                    };
+                  });
+                }}
+                value={inputs.password}
+              />
+            </View>
+            {errors.passwordErr.length !== 0 && (
+              <Text style={styles.error}>{errors.passwordErr}</Text>
+            )}
           </View>
-          {errors.passwordErr.length !== 0 && (
-            <Text style={styles.error}>{errors.passwordErr}</Text>
-          )}
-        </View>
-        <TouchableOpacity style={styles.forgotBtnContainer}>
-          <Text style={styles.forgotButton}>Forgot Password?</Text>
-        </TouchableOpacity>
-        <TouchableBtn text="Sign In" onPress={submitHandler} />
-        <View style={styles.signUpContainer}>
-          <Text style={styles.textSignUp}>Don't have an Account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-            <Text style={styles.signUpText}> Sign Up </Text>
+          <TouchableOpacity style={styles.forgotBtnContainer}>
+            <Text style={styles.forgotButton}>Forgot Password?</Text>
           </TouchableOpacity>
+          <TouchableBtn text="Sign In" onPress={submitHandler} />
+          <View style={styles.signUpContainer}>
+            <Text style={styles.textSignUp}>Don't have an Account? </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+              <Text style={styles.signUpText}> Sign Up </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </View>
   );
 }

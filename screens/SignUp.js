@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  KeyboardAvoidingView,
 } from 'react-native';
 import TouchableBtn from '../components/TouchableBtn';
 
@@ -32,19 +33,18 @@ function SignUp({navigation}) {
     passwordErr: '',
     confPasswordErr: '',
   };
-  // const initialFocus = {
-  //   firstNameFocus: false,
-  //   lastNameFocus: false,
-  //   emailFocus: false,
-  //   phoneFocus: false,
-  //   passwordFocus: false,
-  //   confPasswordFocus: false,
-  // };
+  const initialFocus = {
+    firstNameFocus: false,
+    lastNameFocus: false,
+    emailFocus: false,
+    phoneFocus: false,
+    passwordFocus: false,
+    confPasswordFocus: false,
+  };
 
   const [inputs, setInputs] = useState(initialInputs);
   const [errors, setErrors] = useState(initialErrors);
-  // const [focus, setFocus] = useState(initialFocus);
-  // const [InputBackGroundColor, setInputBackGroundColor] = useState('#1c1d1f');
+  const [isFocused, setIsFocused] = useState(initialFocus);
 
   let isFirstNameValid = false;
   let isLastNameValid = false;
@@ -58,25 +58,16 @@ function SignUp({navigation}) {
       setErrors(prevError => {
         return {...prevError, firstNameErr: `This feild can't be empty`};
       });
-      // setFocus(prevFocus => {
-      //   return {...prevFocus, firstNameFocus: true};
-      // });
       isFirstNameValid = false;
     } else if (!nameRegEx.test(firstName)) {
       setErrors(prevError => {
         return {...prevError, firstNameErr: `Enter valid first name`};
       });
-      // setFocus(prevFocus => {
-      //   return {...prevFocus, firstNameFocus: true};
-      // });
       isFirstNameValid = false;
     } else {
       setErrors(prevError => {
         return {...prevError, firstNameErr: ''};
       });
-      // setFocus(prevFocus => {
-      //   return {...prevFocus, firstNameFocus: false};
-      // });
       isFirstNameValid = true;
     }
   };
@@ -211,11 +202,23 @@ function SignUp({navigation}) {
           firstNameErr: 'Please enter valid first name',
         };
       });
+      setIsFocused(prevFocused => {
+        return {
+          ...prevFocused,
+          firstNameFocus: true,
+        };
+      });
     } else {
       setErrors(prevError => {
         return {
           ...prevError,
           firstNameErr: '',
+        };
+      });
+      setIsFocused(prevFocused => {
+        return {
+          ...prevFocused,
+          firstNameFocus: false,
         };
       });
       if (!isLastNameValid) {
@@ -225,11 +228,23 @@ function SignUp({navigation}) {
             lastNameErr: 'Please enter valid last name',
           };
         });
+        setIsFocused(prevFocused => {
+          return {
+            ...prevFocused,
+            lastNameFocus: true,
+          };
+        });
       } else {
         setErrors(prevError => {
           return {
             ...prevError,
             lastNameErr: '',
+          };
+        });
+        setIsFocused(prevFocused => {
+          return {
+            ...prevFocused,
+            firstNameFocus: false,
           };
         });
         if (!isEmailValid) {
@@ -239,11 +254,23 @@ function SignUp({navigation}) {
               emailErr: 'Please enter valid email',
             };
           });
+          setIsFocused(prevFocused => {
+            return {
+              ...prevFocused,
+              emailFocus: true,
+            };
+          });
         } else {
           setErrors(prevError => {
             return {
               ...prevError,
               emailErr: '',
+            };
+          });
+          setIsFocused(prevFocused => {
+            return {
+              ...prevFocused,
+              emailFocus: false,
             };
           });
           if (!isPhoneValid) {
@@ -253,11 +280,23 @@ function SignUp({navigation}) {
                 phoneErr: 'Please enter valid phone number',
               };
             });
+            setIsFocused(prevFocused => {
+              return {
+                ...prevFocused,
+                phoneFocus: true,
+              };
+            });
           } else {
             setErrors(prevError => {
               return {
                 ...prevError,
                 phoneErr: '',
+              };
+            });
+            setIsFocused(prevFocused => {
+              return {
+                ...prevFocused,
+                phoneFocus: false,
               };
             });
             if (!isPasswordValid) {
@@ -267,11 +306,23 @@ function SignUp({navigation}) {
                   passwordErr: 'Please enter valid password',
                 };
               });
+              setIsFocused(prevFocused => {
+                return {
+                  ...prevFocused,
+                  passwordFocus: true,
+                };
+              });
             } else {
               setErrors(prevError => {
                 return {
                   ...prevError,
                   passwordErr: '',
+                };
+              });
+              setIsFocused(prevFocused => {
+                return {
+                  ...prevFocused,
+                  passwordFocus: false,
                 };
               });
               if (!isConfPasswordValid) {
@@ -281,11 +332,23 @@ function SignUp({navigation}) {
                     confPasswordErr: `Password doesn't matched`,
                   };
                 });
+                setIsFocused(prevFocused => {
+                  return {
+                    ...prevFocused,
+                    confPasswordFocus: true,
+                  };
+                });
               } else {
                 setErrors(prevError => {
                   return {
                     ...prevError,
                     confPasswordErr: '',
+                  };
+                });
+                setIsFocused(prevFocused => {
+                  return {
+                    ...prevFocused,
+                    confPasswordFocus: false,
                   };
                 });
                 setInputs({
@@ -334,16 +397,6 @@ function SignUp({navigation}) {
     // }
   };
 
-  // const customOnFocus = () => {
-  //   props?.onFocus;
-  //   setInputBackgroundColor(secondary);
-  // };
-
-  // const customOnBlur = () => {
-  //   props?.onBlur;
-  //   setInputBackgroundColor('#1c1d1f');
-  // };
-
   return (
     <ScrollView style={{flex: 1}}>
       <View style={styles.rootContainer}>
@@ -351,134 +404,269 @@ function SignUp({navigation}) {
         <Text style={[styles.textStyle, styles.subHeading]}>
           Please fill in the form to continue
         </Text>
-        <View style={styles.formContainer}>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.TextInput}
-                placeholder="First Name"
-                placeholderTextColor="#696969"
-                onChangeText={value =>
-                  setInputs(prevInputs => {
-                    return {...prevInputs, firstName: value};
-                  })
-                }
-                // autoFocus={focus.firstNameFocus}
-                // onFocus={customOnFocus}
-                // onBlur={customOnBlur}
-                onEndEditing={e => {
-                  e.persist();
-                  // console.log(e.nativeEvent.text);
-                  validateFirstName(e.nativeEvent.text);
-                }}
-                // onBlur={event => {
-                //   return console.log(event);
-                // }}
-                value={inputs.firstName}
-              />
+        <KeyboardAvoidingView>
+          <View style={styles.formContainer}>
+            <View style={styles.inputContainer}>
+              <View style={styles.inputView}>
+                <TextInput
+                  style={[
+                    styles.TextInput,
+                    {
+                      borderBottomColor: isFocused.firstNameFocus
+                        ? '#1e90ff'
+                        : '#1c1d1f',
+                    },
+                  ]}
+                  placeholder="First Name"
+                  placeholderTextColor="#696969"
+                  onChangeText={value => {
+                    validateFirstName(value);
+                    setInputs(prevInputs => {
+                      return {...prevInputs, firstName: value};
+                    });
+                  }}
+                  onFocus={() =>
+                    setIsFocused(prevFocused => {
+                      return {
+                        ...prevFocused,
+                        firstNameFocus: true,
+                      };
+                    })
+                  }
+                  onBlur={() => {
+                    setIsFocused(prevFocused => {
+                      return {
+                        ...prevFocused,
+                        firstNameFocus: false,
+                      };
+                    });
+                  }}
+                  value={inputs.firstName}
+                />
+              </View>
+              {errors.firstNameErr.length !== 0 && (
+                <Text style={styles.error}>{errors.firstNameErr}</Text>
+              )}
             </View>
-            {errors.firstNameErr.length !== 0 && (
-              <Text style={styles.error}>{errors.firstNameErr}</Text>
-            )}
-          </View>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.TextInput}
-                placeholder="Last Name"
-                placeholderTextColor="#696969"
-                onChangeText={value =>
-                  setInputs(prevInputs => {
-                    return {...prevInputs, lastName: value};
-                  })
-                }
-                value={inputs.lastName}
-              />
+            <View style={styles.inputContainer}>
+              <View style={styles.inputView}>
+                <TextInput
+                  style={[
+                    styles.TextInput,
+                    {
+                      borderBottomColor: isFocused.lastNameFocus
+                        ? '#1e90ff'
+                        : '#1c1d1f',
+                    },
+                  ]}
+                  placeholder="Last Name"
+                  placeholderTextColor="#696969"
+                  onChangeText={value => {
+                    validateLastName(value);
+                    setInputs(prevInputs => {
+                      return {...prevInputs, lastName: value};
+                    });
+                  }}
+                  onFocus={() =>
+                    setIsFocused(prevFocused => {
+                      return {
+                        ...prevFocused,
+                        lastNameFocus: true,
+                      };
+                    })
+                  }
+                  onBlur={() => {
+                    setIsFocused(prevFocused => {
+                      return {
+                        ...prevFocused,
+                        lastNameFocus: false,
+                      };
+                    });
+                  }}
+                  value={inputs.lastName}
+                />
+              </View>
+              {errors.lastNameErr.length !== 0 && (
+                <Text style={styles.error}>{errors.lastNameErr}</Text>
+              )}
             </View>
-            {errors.lastNameErr.length !== 0 && (
-              <Text style={styles.error}>{errors.lastNameErr}</Text>
-            )}
-          </View>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.TextInput}
-                placeholder="Email Address"
-                placeholderTextColor="#696969"
-                onChangeText={value =>
-                  setInputs(prevInputs => {
-                    return {...prevInputs, email: value};
-                  })
-                }
-                value={inputs.email}
-              />
+            <View style={styles.inputContainer}>
+              <View style={styles.inputView}>
+                <TextInput
+                  style={[
+                    styles.TextInput,
+                    {
+                      borderBottomColor: isFocused.emailFocus
+                        ? '#1e90ff'
+                        : '#1c1d1f',
+                    },
+                  ]}
+                  placeholder="Email Address"
+                  placeholderTextColor="#696969"
+                  onChangeText={value => {
+                    validateEmail(value);
+                    setInputs(prevInputs => {
+                      return {...prevInputs, email: value};
+                    });
+                  }}
+                  onFocus={() =>
+                    setIsFocused(prevFocused => {
+                      return {
+                        ...prevFocused,
+                        emailFocus: true,
+                      };
+                    })
+                  }
+                  onBlur={() => {
+                    setIsFocused(prevFocused => {
+                      return {
+                        ...prevFocused,
+                        emailFocus: false,
+                      };
+                    });
+                  }}
+                  value={inputs.email}
+                />
+              </View>
+              {errors.emailErr.length !== 0 && (
+                <Text style={styles.error}>{errors.emailErr}</Text>
+              )}
             </View>
-            {errors.emailErr.length !== 0 && (
-              <Text style={styles.error}>{errors.emailErr}</Text>
-            )}
-          </View>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.TextInput}
-                placeholder="Phone Number"
-                placeholderTextColor="#696969"
-                onChangeText={value =>
-                  setInputs(prevInputs => {
-                    return {...prevInputs, phone: value};
-                  })
-                }
-                value={inputs.phone}
-                maxLength={10}
-              />
+            <View style={styles.inputContainer}>
+              <View style={styles.inputView}>
+                <TextInput
+                  style={[
+                    styles.TextInput,
+                    {
+                      borderBottomColor: isFocused.phoneFocus
+                        ? '#1e90ff'
+                        : '#1c1d1f',
+                    },
+                  ]}
+                  placeholder="Phone Number"
+                  placeholderTextColor="#696969"
+                  maxLength={10}
+                  onChangeText={value => {
+                    validatePhone(value);
+                    setInputs(prevInputs => {
+                      return {...prevInputs, phone: value};
+                    });
+                  }}
+                  onFocus={() =>
+                    setIsFocused(prevFocused => {
+                      return {
+                        ...prevFocused,
+                        phoneFocus: true,
+                      };
+                    })
+                  }
+                  onBlur={() => {
+                    setIsFocused(prevFocused => {
+                      return {
+                        ...prevFocused,
+                        phoneFocus: false,
+                      };
+                    });
+                  }}
+                  value={inputs.phone}
+                />
+              </View>
+              {errors.phoneErr.length !== 0 && (
+                <Text style={styles.error}>{errors.phoneErr}</Text>
+              )}
             </View>
-            {errors.phoneErr.length !== 0 && (
-              <Text style={styles.error}>{errors.phoneErr}</Text>
-            )}
-          </View>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.TextInput}
-                placeholder="Password"
-                placeholderTextColor="#696969"
-                secureTextEntry={true}
-                onChangeText={value =>
-                  setInputs(prevInputs => {
-                    return {...prevInputs, password: value};
-                  })
-                }
-                value={inputs.password}
-                maxLength={6}
-              />
+            <View style={styles.inputContainer}>
+              <View style={styles.inputView}>
+                <TextInput
+                  style={[
+                    styles.TextInput,
+                    {
+                      borderBottomColor: isFocused.passwordFocus
+                        ? '#1e90ff'
+                        : '#1c1d1f',
+                    },
+                  ]}
+                  placeholder="Password"
+                  placeholderTextColor="#696969"
+                  maxLength={6}
+                  secureTextEntry={true}
+                  onChangeText={value => {
+                    validatePassword(value);
+                    setInputs(prevInputs => {
+                      return {...prevInputs, password: value};
+                    });
+                  }}
+                  onFocus={() =>
+                    setIsFocused(prevFocused => {
+                      return {
+                        ...prevFocused,
+                        passwordFocus: true,
+                      };
+                    })
+                  }
+                  onBlur={() => {
+                    setIsFocused(prevFocused => {
+                      return {
+                        ...prevFocused,
+                        passwordFocus: false,
+                      };
+                    });
+                  }}
+                  value={inputs.password}
+                />
+              </View>
+              {errors.passwordErr.length !== 0 && (
+                <Text style={styles.error}>{errors.passwordErr}</Text>
+              )}
             </View>
-            {errors.passwordErr.length !== 0 && (
-              <Text style={styles.error}>{errors.passwordErr}</Text>
-            )}
-          </View>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.TextInput}
-                placeholder="Confirm Password"
-                placeholderTextColor="#696969"
-                secureTextEntry={true}
-                onChangeText={value =>
-                  setInputs(prevInputs => {
-                    return {...prevInputs, confPassword: value};
-                  })
-                }
-                value={inputs.confPassword}
-                maxLength={6}
-              />
+            <View style={styles.inputContainer}>
+              <View style={styles.inputView}>
+                <TextInput
+                  style={[
+                    styles.TextInput,
+                    {
+                      borderBottomColor: isFocused.confPasswordFocus
+                        ? '#1e90ff'
+                        : '#1c1d1f',
+                    },
+                  ]}
+                  placeholder="Confirm Password"
+                  placeholderTextColor="#696969"
+                  maxLength={6}
+                  secureTextEntry={true}
+                  onChangeText={value => {
+                    validateConfPassword(value, inputs.password);
+                    setInputs(prevInputs => {
+                      return {...prevInputs, confPassword: value};
+                    });
+                  }}
+                  onFocus={() =>
+                    setIsFocused(prevFocused => {
+                      return {
+                        ...prevFocused,
+                        confPasswordFocus: true,
+                      };
+                    })
+                  }
+                  onBlur={() => {
+                    setIsFocused(prevFocused => {
+                      return {
+                        ...prevFocused,
+                        confPasswordFocus: false,
+                      };
+                    });
+                  }}
+                  value={inputs.confPassword}
+                />
+              </View>
+              {errors.confPasswordErr.length !== 0 && (
+                <Text style={styles.error}>{errors.confPasswordErr}</Text>
+              )}
             </View>
-            {errors.confPasswordErr.length !== 0 && (
-              <Text style={styles.error}>{errors.confPasswordErr}</Text>
-            )}
+            <TouchableBtn text="Sign Up" onPress={submitHandler} />
+            <TouchableBtn text="Delete Users" onPress={removeValue} />
           </View>
-          <TouchableBtn text="Sign Up" onPress={submitHandler} />
-          <TouchableBtn text="Delete Users" onPress={removeValue} />
-        </View>
+        </KeyboardAvoidingView>
       </View>
     </ScrollView>
   );
@@ -526,6 +714,7 @@ const styles = StyleSheet.create({
     height: 50,
     flex: 1,
     padding: 10,
+    borderBottomWidth: 2,
     color: '#fff',
   },
   textStyle: {color: '#696969'},
