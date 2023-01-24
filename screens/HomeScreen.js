@@ -5,26 +5,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 function HomeScreen() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(
-    //for reading data stored in async
+  useEffect(() => {
     async () => {
       try {
-        const jsonValue = await AsyncStorage.getItem('isLoggedIn');
-        jsonValue != null ? JSON.parse(jsonValue) : null;
-        // return jsonValue;
-        setIsLoggedIn(jsonValue);
+        let value = await AsyncStorage.getItem('isLoggedIn');
+        setIsLoggedIn(value);
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
-    },
-    [],
-  );
+    };
+  }, []);
 
-  //for storing data async way
-  const removeLoggedIn = async value => {
+  setStringValue = async value => {
+    let valueStr = value.toString();
     try {
-      const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem('isLoggedIn', jsonValue);
+      await AsyncStorage.setItem('isLoggedIn', valueStr);
     } catch (e) {
       console.error(e);
     }
@@ -34,7 +29,7 @@ function HomeScreen() {
     <View style={styles.rootContainer}>
       <Text style={styles.textStyle}>Welcome User!! {isLoggedIn}</Text>
       <Text>{isLoggedIn}</Text>
-      <Button title="Logout" onPress={() => removeLoggedIn(false)} />
+      <Button title="Remove" onPress={() => setStringValue(false)} />
     </View>
   );
 }

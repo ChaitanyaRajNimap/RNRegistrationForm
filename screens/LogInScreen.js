@@ -31,9 +31,9 @@ function LogInScreen({navigation}) {
 
   //for storing data async way
   const storeData = async value => {
+    let valueStr = value.toString();
     try {
-      const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem('isLoggedIn', jsonValue);
+      await AsyncStorage.setItem('isLoggedIn', valueStr);
     } catch (e) {
       console.error(e);
     }
