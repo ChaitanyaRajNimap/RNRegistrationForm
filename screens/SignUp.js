@@ -11,25 +11,11 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import TouchableBtn from '../components/TouchableBtn';
-//for sqlite
-import SQLite from 'react-native-sqlite-storage';
-
-//for defining database
-const db = SQLite.openDatabase(
-  {
-    name: 'MainDB',
-    location: 'default',
-  },
-  () => {},
-  error => {
-    console.log(error);
-  },
-);
 
 function SignUp({navigation}) {
-  const emailRegEx = /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/;
+  const emailRegEx = /^[a-zA-Z0-9._]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const passwordRegEx = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{4,6}$/;
-  const nameRegEx = /^[A-Za-z\s]{1,}[A-Za-z\s]{0,}$/;
+  const nameRegEx = /^[A-Za-z]+$/;
   const phoneRegEx = /^[789]\d{9}$/;
   const initialInputs = {
     firstName: '',
@@ -59,21 +45,6 @@ function SignUp({navigation}) {
   const [inputs, setInputs] = useState(initialInputs);
   const [errors, setErrors] = useState(initialErrors);
   const [isFocused, setIsFocused] = useState(initialFocus);
-
-  //function to create table
-  const createTable = () => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'CREATE TABLE IF NOT EXISTS' +
-          'Users ' +
-          '(ID INTEGER PRIMARY KEY AUTOINCREMENT,Token INTEGER);',
-      );
-    });
-  };
-
-  useEffect(() => {
-    createTable();
-  }, []);
 
   let isFirstNameValid = false;
   let isLastNameValid = false;
@@ -199,36 +170,20 @@ function SignUp({navigation}) {
   //for storing data async way
   const storeData = async value => {
     if (value) {
-      let x = Math.floor(Math.random() * 100 + 1);
-
       try {
-        // const jsonValue = JSON.stringify(value);
-        // await AsyncStorage.setItem('UserDetails', jsonValue);
-        await db.transaction(async tx => {
-          await tx.executeSql('INSERT INTO Users (Token) VALUES (?)', [x]);
-        });
+        const jsonValue = JSON.stringify(value);
+        await AsyncStorage.setItem('UserDetails', jsonValue);
       } catch (e) {
-        // saving error
+        console.error(e);
       }
     }
   };
 
   const removeValue = async () => {
     try {
-      // await AsyncStorage.removeItem('UserDetails');
-      db.transaction(tx => {
-        tx.executeSql(
-          'DELETE FROM Users',
-          [],
-          () => {},
-          error => {
-            console.log(error);
-          },
-        );
-      });
-      navigation.navigate('LogIn');
+      await AsyncStorage.removeItem('UserDetails');
     } catch (e) {
-      // remove error
+      console.log(e);
     }
 
     console.log('Done.');
@@ -414,34 +369,6 @@ function SignUp({navigation}) {
         }
       }
     }
-
-    // if (
-    //   isFirstNameValid &&
-    //   isLastNameValid &&
-    //   isEmailValid &&
-    //   isPhoneValid &&
-    //   isPasswordValid &&
-    //   isConfPasswordValid
-    // ) {
-    //   setErrors({
-    //     firstNameErr: '',
-    //     lastNameErr: '',
-    //     emailErr: '',
-    //     phoneErr: '',
-    //     passwordErr: '',
-    //     confPasswordErr: '',
-    //   });
-    //   setInputs({
-    //     firstName: '',
-    //     lastName: '',
-    //     email: '',
-    //     phone: '',
-    //     password: '',
-    //     confPassword: '',
-    //   });
-    //   storeData(inputs);
-    //   navigation.navigate('LogIn');
-    // }
   };
 
   return (
@@ -451,7 +378,7 @@ function SignUp({navigation}) {
         <Text style={[styles.textStyle, styles.subHeading]}>
           Please fill in the form to continue
         </Text>
-        <KeyboardAvoidingView>
+        <KeyboardAvoidingView style={{flex: 1}}>
           <View style={styles.formContainer}>
             <View style={styles.inputContainer}>
               <View style={styles.inputView}>

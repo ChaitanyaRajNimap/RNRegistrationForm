@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
@@ -11,20 +11,6 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import TouchableBtn from '../components/TouchableBtn';
-//for sqlite
-import SQLite from 'react-native-sqlite-storage';
-
-//for defining database
-const db = SQLite.openDatabase(
-  {
-    name: 'MainDB',
-    location: 'default',
-  },
-  () => {},
-  error => {
-    console.log(error);
-  },
-);
 
 function LogInScreen({navigation}) {
   const emailRegEx = /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/;
@@ -33,12 +19,25 @@ function LogInScreen({navigation}) {
   const initialErrors = {emailErr: '', passwordErr: ''};
   const initialFocus = {emailFocus: '', passwordFocus: ''};
 
+  const ref_password = useRef();
+
   const [inputs, setInputs] = useState(initialInputs);
   const [errors, setErrors] = useState(initialErrors);
   const [isFocused, setIsFocused] = useState(initialFocus);
+  const [userData, setUserData] = useState(null);
 
   let isEmailValid = false;
   let isPasswordValid = false;
+
+  //for storing data async way
+  const storeData = async value => {
+    try {
+      const jsonValue = JSON.stringify(value);
+      await AsyncStorage.setItem('isLoggedIn', jsonValue);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const updateEmail = emailValue => {
     setInputs(prevInputs => {
@@ -93,21 +92,11 @@ function LogInScreen({navigation}) {
   //for reading data stored in async
   const getData = async () => {
     try {
-      // const jsonValue = await AsyncStorage.getItem('UserDetails');
-      // // console.log('Users Deatils from log in : ', JSON.parse(jsonValue));
-      // jsonValue != null ? JSON.parse(jsonValue) : null;
-      // return jsonValue;
-      db.transaction(tx => {
-        tx.executeSql('SELECT Token FROM Users', [], (tx, results) => {
-          var len = results.rows.length;
-          if (len > 0) {
-            var userToken = results.rows.item(0).Token;
-            return userToken;
-          }
-        });
-      });
+      const jsonValue = await AsyncStorage.getItem('UserDetails');
+      jsonValue != null ? JSON.parse(jsonValue) : null;
+      return jsonValue;
     } catch (e) {
-      // error reading value
+      console.log(e);
     }
   };
 
@@ -167,18 +156,14 @@ function LogInScreen({navigation}) {
             passwordFocus: false,
           };
         });
-        let userEmail, userPassword;
         getData().then(res => {
-          // const userData = JSON.parse(res);
-          // userEmail = userData.email;
-          // userPassword = userData.password;
-          // if (inputs.email === userEmail && inputs.password === userPassword) {
-          //   navigation.navigate('UserHomeScreen');
-          // } else {
-          //   Alert.alert('Warning!', `Credentials doesn't match, try again!`);
-          // }
-          if (res) {
+          const userData = JSON.parse(res);
+          userEmail = userData.email;
+          userPassword = userData.password;
+          if (inputs.email === userEmail && inputs.password === userPassword) {
+            storeData(true);
             navigation.navigate('UserHomeScreen');
+            setInputs({email: '', password: ''});
           } else {
             Alert.alert('Warning!', `Credentials doesn't match, try again!`);
           }
@@ -206,6 +191,9 @@ function LogInScreen({navigation}) {
                       : '#1c1d1f',
                   },
                 ]}
+                autoFocus={true}
+                returnKeyType="next"
+                onSubmitEditing={() => ref_password.current.focus()}
                 placeholder="Email Address"
                 placeholderTextColor="#696969"
                 onChangeText={value => {
@@ -248,9 +236,11 @@ function LogInScreen({navigation}) {
                       : '#1c1d1f',
                   },
                 ]}
+                ref={ref_password}
                 placeholder="Password"
                 placeholderTextColor="#696969"
                 maxLength={6}
+                secureTextEntry={true}
                 onChangeText={value => {
                   validatePassword(value);
                   setInputs(prevInputs => {
@@ -337,6 +327,7 @@ const styles = StyleSheet.create({
     height: 50,
     flex: 1,
     padding: 10,
+    borderBottomWidth: 2,
     color: '#fff',
   },
   forgotBtnContainer: {
